@@ -1,0 +1,282 @@
+!
+version 12.2(37)SE1
+no service timestamps log datetime msec
+no service timestamps debug datetime msec
+no service password-encryption
+!
+hostname MLS2
+!
+!
+!
+ip dhcp excluded-address 10.27.71.129 10.27.71.130
+ip dhcp excluded-address 10.27.71.178 10.27.71.179
+ip dhcp excluded-address 10.27.70.1 10.27.70.2
+ip dhcp excluded-address 10.27.70.253 10.27.70.254
+ip dhcp excluded-address 10.27.68.1 10.27.68.2
+ip dhcp excluded-address 10.27.69.253 10.27.69.254
+ip dhcp excluded-address 10.27.71.1 10.27.71.2
+ip dhcp excluded-address 10.27.71.124 10.27.71.125
+ip dhcp excluded-address 10.27.71.225 10.27.71.226
+!
+ip dhcp pool VLAN10-STAFF
+ network 10.27.71.128 255.255.255.192
+ default-router 10.27.71.130
+ dns-server 192.168.5.2
+ domain-name RECOMP2425M1B05
+ip dhcp pool VLAN20-ACCOUNTING
+ network 10.27.70.0 255.255.255.0
+ default-router 10.27.70.2
+ dns-server 192.168.5.2
+ domain-name RECOMP2425M1B05
+ip dhcp pool VLAN30-HR
+ network 10.27.71.0 255.255.255.128
+ default-router 10.27.71.2
+ dns-server 192.168.5.2
+ domain-name RECOMP2425M1B05
+ip dhcp pool VLAN40-USERS
+ network 10.27.68.0 255.255.254.0
+ default-router 10.27.68.2
+ dns-server 192.168.5.2
+ domain-name RECOMP2425M1B05
+ip dhcp pool VLAN101-IOT
+ network 10.27.71.224 255.255.255.240
+ default-router 10.27.71.226
+ dns-server 192.168.5.2
+ domain-name RECOMP2425M1B05
+!
+!
+ip routing
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree vlan 30,40 priority 24576
+spanning-tree vlan 10,20 priority 28672
+!
+!
+!
+!
+!
+!
+interface Port-channel1
+!
+interface FastEthernet0/1
+ switchport trunk native vlan 50
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ channel-group 1 mode desirable
+!
+interface FastEthernet0/2
+ switchport trunk native vlan 50
+ channel-group 1 mode desirable
+!
+interface FastEthernet0/3
+ switchport access vlan 20
+ switchport trunk native vlan 50
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ channel-group 1 mode desirable
+!
+interface FastEthernet0/4
+ switchport trunk native vlan 50
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/5
+ switchport trunk native vlan 50
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/6
+ switchport trunk native vlan 50
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/7
+ switchport trunk native vlan 50
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/8
+ switchport trunk native vlan 50
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/9
+ switchport trunk native vlan 50
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/10
+ switchport trunk native vlan 50
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/11
+ switchport trunk native vlan 50
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/12
+ switchport trunk native vlan 50
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/13
+ switchport trunk native vlan 50
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/14
+ switchport trunk native vlan 50
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/15
+ switchport trunk native vlan 50
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/16
+ switchport trunk native vlan 50
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/17
+ switchport trunk native vlan 50
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/18
+ switchport trunk native vlan 50
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/19
+ switchport trunk native vlan 50
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/20
+ switchport trunk native vlan 50
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/21
+ switchport trunk native vlan 50
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/22
+ switchport trunk native vlan 50
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/23
+ switchport trunk native vlan 50
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/24
+ switchport trunk native vlan 50
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface GigabitEthernet0/1
+ switchport trunk native vlan 50
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface GigabitEthernet0/2
+ no switchport
+ ip address 10.27.71.198 255.255.255.252
+ duplex auto
+ speed auto
+!
+interface Vlan1
+ no ip address
+!
+interface Vlan10
+ mac-address 0001.96d8.3701
+ ip address 10.27.71.130 255.255.255.192
+ standby 10 ip 10.27.71.190
+ standby 10 preempt
+!
+interface Vlan20
+ mac-address 0001.96d8.3702
+ ip address 10.27.70.2 255.255.255.0
+ standby 20 ip 10.27.70.254
+ standby 20 preempt
+!
+interface Vlan30
+ mac-address 0001.96d8.3703
+ ip address 10.27.71.2 255.255.255.128
+ standby 30 ip 10.27.71.125
+ standby 30 priority 110
+ standby 30 preempt
+!
+interface Vlan40
+ mac-address 0001.96d8.3704
+ ip address 10.27.68.2 255.255.254.0
+ standby 40 ip 10.27.69.253
+ standby 40 priority 110
+ standby 40 preempt
+!
+interface Vlan100
+ mac-address 0001.96d8.3705
+ ip address 10.27.71.212 255.255.255.240
+ standby 100 preempt
+!
+interface Vlan101
+ mac-address 0001.96d8.3706
+ ip address 10.27.71.226 255.255.255.240
+!
+router ospf 1
+ router-id 4.4.4.4
+ log-adjacency-changes
+ network 10.27.71.196 0.0.0.3 area 1
+ network 10.27.68.0 0.0.1.255 area 1
+ network 10.27.70.0 0.0.0.255 area 1
+ network 10.27.71.0 0.0.0.127 area 1
+ network 10.27.71.128 0.0.0.63 area 1
+ network 10.27.71.208 0.0.0.15 area 1
+ network 10.27.71.224 0.0.0.15 area 1
+!
+router rip
+!
+ip classless
+ip route 0.0.0.0 0.0.0.0 10.27.71.197 
+!
+ip flow-export version 9
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+!
+line aux 0
+!
+line vty 0 4
+ login
+!
+!
+!
+!
+end
+

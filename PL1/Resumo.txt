@@ -1,0 +1,19 @@
+Nesta PL1 aprendemos os seguintes conceitos e práticas:
+
+1. **Configuração básica de switches**:
+   - Atribuir hostnames aos switches.
+   - Verificar a configuração atual das portas para garantir que estão prontas para formar um EtherChannel.
+
+2. **EtherChannel e os seus benefícios**:
+   - A ideia central do **EtherChannel** é combinar múltiplos links físicos num único link lógico, permitindo maior capacidade de banda e redundância.
+   - O **EtherChannel** resolve problemas de subutilização de banda ao permitir o uso simultâneo de múltiplos links redundantes.
+
+3. **Configuração de diferentes tipos de EtherChannel**:
+   - **PAgP** (Port Aggregation Protocol): Protocolo proprietário da Cisco que negocia a agregação de links.
+   - **LACP** (Link Aggregation Control Protocol): Protocolo padrão IEEE (802.3ad) que negocia a agregação de links entre dispositivos de diferentes fabricantes.
+   - **Modo Manual "ON"**: Configuração sem negociação de protocolo, onde os links são forçados a formar um EtherChannel.
+
+4. **Verificação de status e funcionamento**:
+   - Após configurar um EtherChannel, é importante verificar o seu status com comandos como "show etherchannel summary", para garantir que os links estão a funcionar corretamente e as portas estão agregadas.
+
+Estas práticas permitem melhorar o desempenho e a confiabilidade da rede, fazendo uso mais eficiente da infraestrutura disponível.

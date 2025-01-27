@@ -1,0 +1,70 @@
+### **Passo 1: Configuração Inicial**
+
+1. **Atribuir IPs Estáticos aos PCs**  
+   Configuramos manualmente os endereços IP para cada PC, conforme a **Tabela 1**. O motivo para isso é garantir que os PCs tenham endereços IP válidos dentro da mesma rede/sub-rede. Como usamos a máscara de sub-rede "255.255.255.0", significa que todos os dispositivos dentro dessa sub-rede podem comunicar diretamente entre si, desde que estejam na mesma VLAN.
+   
+   - Cada PC terá o IP atribuído nas suas interfaces de rede, garantindo que eles possam comunicar entre si.
+
+2. **Atribuir um Nome de Host aos Switches**  
+   Configuramos o nome de cada switch usando o comando `hostname`. Isso é feito para facilitar a gestão e identificação dos dispositivos. Se tivermos vários switches na rede, dar-lhes nomes únicos facilita o diagnóstico de problemas e configuração de novas funções.
+---
+
+### **Passo 2: Adicionar VLANs ao Switch**
+
+1. **Criar VLANs no SW0**  
+   As VLANs são criadas no **SW0**, que é o switch principal. Uma VLAN (Virtual Local Area Network) é essencialmente uma forma de dividir uma rede física em várias redes lógicas menores, para que possamos isolar diferentes grupos de dispositivos ou serviços. Aqui, criamos três VLANs:
+
+   - VLAN 100 ("VLAN_100") 
+   - VLAN 101 ("VLAN_101")
+   - VLAN 102 ("VLAN_102")
+
+   Cada VLAN vai separar o tráfego da rede de acordo com o grupo ao qual cada dispositivo pertence, o que melhora a segurança e a organização da rede.
+
+   Depois de criar as VLANs no **SW0**, este switch vai atuar como servidor de VTP (VLAN Trunking Protocol), o que significa que ele será o responsável por propagar as VLANs criadas para os outros switches da rede.
+
+2. **Configurar as Conexões entre Switches para Trunk-mode**  
+   O modo "trunk" é essencial porque permite que múltiplas VLANs passem por uma única ligação entre switches. Se não configurássemos as portas entre os switches para trunk-mode, as VLANs não seriam capazes de se propagar para outros switches, e os dispositivos conectados a esses switches não seriam capazes de participar corretamente nas VLANs.
+---
+
+### **Passo 3: Configurar o VTP**
+
+1. **Configurar o Domínio VTP e a Senha no SW0**  
+   O **VTP** é um protocolo que facilita a gestão centralizada de VLANs, propagando-as automaticamente para todos os switches dentro do mesmo domínio VTP.  
+   Aqui, configuramos o domínio "RECOMP" para garantir que todos os switches usam a mesma base de VLANs. A senha "123" serve para garantir que apenas switches autorizados possam participar no domínio VTP, adicionando uma camada de segurança. O SW0 é o servidor VTP, então ele gere a base de dados de VLANs.
+
+
+2. **Verificar o Status do VTP**  
+   O comando "show vtp status" permite verificar se o VTP foi configurado corretamente. Exibe o nome do domínio VTP, o modo do switch (servidor ou cliente), o número de revisões da base de dados e outras informações. Isto é crucial para garantir que a configuração está correta antes de proceder.
+
+3. **Configurar Outros Switches como Clientes no VTP**  
+   Os outros switches (SW1, SW2, etc.) são configurados como **clientes VTP**. Isso significa que eles não criam ou alteram VLANs, mas recebem as configurações do servidor VTP (SW0).  
+   Configuramos o mesmo domínio e a mesma senha nesses switches para que possam autenticar-se no VTP do SW0 e receber as VLANs automaticamente.
+
+4. **Verificar a Propagação das VLANs**  
+   Depois de configurar o VTP nos switches, é importante verificar se as VLANs foram propagadas corretamente. Usamos o comando "show vlan brief" para ver a lista de VLANs em cada switch. Se as VLANs criadas no SW0 estiverem a aparecer nos outros switches, isso significa que a propagação via VTP está funcionando.
+
+---
+
+### **Passo 4: Configurar Portas de Acesso nos Switches SW3 e SW4**
+
+1. **Configurar as Portas de Acesso para os PCs**  
+   A seguir, configuramos as portas nos switches SW3 e SW4 como **portas de acesso** e as associarmos às VLANs corretas. Ao contrário das portas trunk, as portas de acesso são atribuídas a uma única VLAN e conectam diretamente os dispositivos (PCs) à VLAN designada.
+
+   Exemplo:
+   - **PC1** precisa ser associado à **VLAN 100**, então a porta à qual ele está conectado (no SW3) é configurada para aceder apenas à VLAN 100.
+   - O mesmo se aplica aos outros PCs (PC2, PC3, PC4) com suas respectivas VLANs.
+
+   Isto é necessário para que os PCs participem corretamente nas VLANs.
+
+2. **Verificar a Configuração da VLAN**  
+   O comando "show vlan brief" é usado para garantir que as portas foram atribuídas às VLANs corretas. Este comando mostra todas as VLANs criadas no switch e as interfaces associadas a cada VLAN.
+
+---
+
+### **Passo 5: Verificar a Conectividade entre os PCs**
+
+Agora que tudo está configurado, podemos verificar se os PCs estão a comunicar conforme o esperado. PCs na **mesma VLAN** devem ser capazes de se comunicar entre si (por exemplo, **PC1** e **PC4** se estiverem na VLAN 100), mas PCs em **VLANs diferentes** não devem ser capazes de se comunicar diretamente (por exemplo, **PC1** na VLAN 100 e **PC2** na VLAN 101 não conseguem comunicar).
+
+- Executando o comando "ping" de um PC para outro, conseguimos testar se a configuração de VLANs está a funcionar como o esperado.  
+- Se os PCs na mesma VLAN conseguirem comunicar, significa que a configuração está correta.
+

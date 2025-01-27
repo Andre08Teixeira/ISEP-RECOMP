@@ -1,0 +1,89 @@
+### **Parte 1: Atribuir IPs e Nomes**
+
+#### Passo 1: Atribuir IP e Gateway aos PCs
+
+- Configuramos manualmente os endereços IPs e os gateways para **PC1** e **PC2**. A tabela de endereços fornecia os detalhes.
+
+- **Porque é importante:**  
+  - Cada dispositivo numa rede precisa de um endereço IP único para poder comunicar com outros dispositivos.
+  - O **gateway** (no caso, o router) permite que os PCs comuniquem com dispositivos fora da sua rede local (ou VLAN). Aqui, estamos a configur isso para possibilitar a comunicação entre os PCs e o router, que vai fazer o roteamento entre as VLANs.
+  
+#### Passo 2: Atribuir Nomes ao Router e ao Switch
+
+- Nomeamos o router como **R1** e o switch como **S1**.
+
+- Nomear dispositivos é uma boa prática em redes para facilitar a gestão e a identificação, especialmente quando há múltiplos dispositivos.
+  
+---
+
+### **Parte 2: Adicionar VLANs ao Switch**
+
+#### Passo 1: Criar VLANs no Switch
+
+- Criamos duas VLANs no switch, **VLAN 10** e **VLAN 30**.
+
+- **VLANs** (Virtual Local Area Networks) são usadas para segmentar a rede. Dispositivos numa VLAN só podem comunicar com outros dispositivos na mesma VLAN, a menos que haja roteamento entre VLANs.
+  - Configuramos **VLAN 10** para **PC1** e **VLAN 30** para **PC2**, isolando-os em diferentes redes lógicas dentro do mesmo switch.
+
+#### Passo 2: Atribuir VLANs às Portas
+
+-Atribuímos a porta **F0/1** à **VLAN 10** (onde está **PC1**) e a porta **F0/2** à **VLAN 30** (onde está **PC2**).
+
+- Para que um dispositivo possa fazer parte de uma VLAN, a porta no switch onde ele está conectado precisa de ser configurada para aquela VLAN específica. Isso garante que o tráfego do dispositivo seja identificado como pertencente àquela VLAN.
+  
+#### Passo 3: Testar a Conectividade entre PC1 e PC2
+
+Testamos a comunicação entre **PC1** e **PC2** com um comando de **ping**.
+
+- **Porquê que os pings falharam?:**  
+  - **PC1** e **PC2** estão em VLANs diferentes e, sem um router configurado para fazer o roteamento entre as VLANs, eles não podem comunicar diretamente. O switch separa o tráfego entre VLANs, e é necessário um router (ou um dispositivo com capacidade de roteamento) para permitir a comunicação entre diferentes VLANs.  
+
+---
+
+### **Parte 3: Configurar Subinterfaces no Router**
+
+#### Passo 1: Configurar Subinterfaces no Router para Inter-VLAN Routing
+
+-Configuramos duas subinterfaces no **R1** para cada VLAN. Uma subinterface é uma "interface virtual" criada a partir de uma interface física.
+
+  - A subinterface **G0/0.10** foi configurada para a **VLAN 10** com o endereço **172.17.10.1**.
+  - A subinterface **G0/0.30** foi configurada para a **VLAN 30** com o endereço **172.17.30.1**.
+
+- **Porque é importante:**  
+  - Um router não pode processar múltiplas VLANs diretamente numa única interface física. Por isso, criamos **subinterfaces** para tratar cada VLAN individualmente.
+  - Cada subinterface lida com o tráfego de uma VLAN específica, permitindo que o router saiba qual a VLAN que está a enviar ou a receber dados.
+  - O encapsulamento **802.1Q** (também chamado de **dot1Q**) é um padrão que permite "taguear" o tráfego com informações da VLAN, essencial para o router distinguir o tráfego das diferentes VLANs.
+
+#### Passo 2: Verificar e Ativar as Interfaces
+
+-Verificamos o status das interfaces e percebemos que as subinterfaces estavam "down". Para corrigir, ativamos a interface física **G0/0** (a interface principal que hospeda as subinterfaces).
+
+  
+- Subinterfaces dependem da interface física. Se a interface física estiver desativada, as subinterfaces também estarão. Portanto, ativamos a **G0/0** com o comando **no shutdown** para habilitar o roteamento entre VLANs.
+
+---
+
+### **Parte 4: Testar a Conectividade com Inter-VLAN Routing**
+
+#### Passo 1: Testar Conectividade Entre PC1 e PC2 (Falha Inicial)
+
+-Testamos novamente o **ping** entre **PC1** e **PC2**.
+
+- **Os pings ainda falharam:**  
+  - Mesmo com o router configurado, o switch ainda não está a permitir que o tráfego entre as VLANs alcance o router. Isso acontece porque a interface **G0/1** do switch (que conecta ao router) não foi configurada como **trunk**.
+
+#### Passo 2: Configurar o Trunk na Interface G0/1
+
+-Configuramos a interface **G0/1** no switch como um **trunk**.
+
+- Um **trunk** permite que múltiplas VLANs partilhem a mesma conexão física entre o switch e o router. Sem o trunk, o switch trataria o tráfego como pertencente a uma única VLAN, bloqueando o tráfego das outras.
+  - Ao ativar o trunk, garantimos que o switch possa enviar e receber tráfego de **todas as VLANs** para o router, permitindo o roteamento entre elas.
+
+#### Passo 3: Testar Novamente a Conectividade
+
+-Testamos mais uma vez o **ping** de **PC1** para **PC2**.
+
+- **Agora o ping é bem-sucedido:**  
+  - O trunk está a permitir que o tráfego de **PC1** (VLAN 10) chegue ao router, que então faz o roteamento para a **VLAN 30**, e vice-versa. Agora, **PC1** e **PC2** podem comunicar através do roteamento entre VLANs configurado no router.
+
+---

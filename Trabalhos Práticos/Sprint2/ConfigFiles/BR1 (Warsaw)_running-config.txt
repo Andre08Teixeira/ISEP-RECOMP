@@ -1,0 +1,106 @@
+!
+version 15.1
+no service timestamps log datetime msec
+no service timestamps debug datetime msec
+no service password-encryption
+!
+hostname Warsaw
+!
+!
+!
+!
+ip dhcp excluded-address 192.168.155.254
+ip dhcp excluded-address 192.168.154.254
+!
+ip dhcp pool VLAN20-ACCOUNTING
+ network 192.168.155.0 255.255.255.0
+ default-router 192.168.155.254
+ dns-server 8.8.8.8
+ip dhcp pool VLAN40-USERS
+ network 192.168.154.0 255.255.255.0
+ default-router 192.168.154.254
+ dns-server 8.8.8.8
+!
+!
+!
+no ip cef
+no ipv6 cef
+!
+!
+!
+!
+license udi pid CISCO2901/K9 sn FTX1524AF20-
+!
+!
+!
+!
+!
+!
+!
+!
+!
+ip domain-name recomp.local
+!
+!
+spanning-tree mode pvst
+!
+!
+!
+!
+!
+!
+interface GigabitEthernet0/0
+ no ip address
+ ip nat inside
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/0.20
+ encapsulation dot1Q 20
+ ip address 192.168.155.254 255.255.255.0
+ ip nat inside
+!
+interface GigabitEthernet0/0.40
+ encapsulation dot1Q 40
+ ip address 192.168.154.254 255.255.255.0
+ ip nat inside
+!
+interface GigabitEthernet0/1
+ no ip address
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/0/0
+ ip address dhcp
+ ip nat outside
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+router rip
+!
+ip nat inside source list 1 interface GigabitEthernet0/0/0 overload
+ip classless
+!
+ip flow-export version 9
+!
+!
+access-list 1 permit 192.168.154.0 0.0.0.255
+access-list 1 permit 192.168.155.0 0.0.0.255
+!
+!
+!
+!
+!
+line con 0
+!
+line aux 0
+!
+line vty 0 4
+ login
+!
+!
+!
+end
+

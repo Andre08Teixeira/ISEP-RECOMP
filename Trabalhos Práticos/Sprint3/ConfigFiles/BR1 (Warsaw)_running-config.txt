@@ -1,0 +1,153 @@
+!
+version 15.1
+no service timestamps log datetime msec
+no service timestamps debug datetime msec
+no service password-encryption
+!
+hostname Warsaw
+!
+!
+!
+!
+ip dhcp excluded-address 192.168.154.254
+ip dhcp excluded-address 192.168.155.254
+ip dhcp excluded-address 192.168.100.33
+!
+ip dhcp pool VLAN20-ACCOUNTING
+ network 192.168.155.0 255.255.255.0
+ default-router 192.168.155.254
+ dns-server 192.168.100.2
+ip dhcp pool VLAN40-USERS
+ network 192.168.154.0 255.255.255.0
+ default-router 192.168.154.254
+ dns-server 192.168.100.2
+ip dhcp pool VLAN101-IOT
+ network 192.168.100.32 255.255.255.224
+ default-router 192.168.100.33
+ dns-server 192.168.100.2
+!
+!
+!
+no ip cef
+no ipv6 cef
+!
+!
+!
+!
+license udi pid CISCO2901/K9 sn FTX1524AF20-
+!
+!
+!
+!
+!
+!
+!
+!
+!
+ip domain-name recomp.local
+!
+!
+spanning-tree mode pvst
+!
+!
+!
+!
+!
+!
+interface Tunnel0
+ ip address 10.0.0.2 255.255.255.252
+ mtu 1476
+ tunnel source GigabitEthernet0/0/0
+ tunnel destination 209.165.200.129
+!
+!
+interface GigabitEthernet0/0
+ no ip address
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/0.20
+ encapsulation dot1Q 20
+ ip address 192.168.155.254 255.255.255.0
+ ip access-group 101 in
+ ip nat inside
+!
+interface GigabitEthernet0/0.40
+ encapsulation dot1Q 40
+ ip address 192.168.154.254 255.255.255.0
+ ip access-group 101 in
+ ip nat inside
+!
+interface GigabitEthernet0/0.101
+ encapsulation dot1Q 101
+ ip address 192.168.100.33 255.255.255.224
+!
+interface GigabitEthernet0/1
+ ip address 192.168.100.1 255.255.255.224
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/0/0
+ ip address dhcp
+ ip access-group 100 in
+ ip nat outside
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+router ospf 1
+ router-id 2.2.2.2
+ log-adjacency-changes
+ network 10.0.0.0 0.0.0.3 area 0
+ network 192.168.154.0 0.0.0.255 area 2
+ network 192.168.155.0 0.0.0.255 area 2
+ network 192.168.100.32 0.0.0.31 area 2
+!
+router rip
+!
+ip nat inside source list 101 interface GigabitEthernet0/0/0 overload
+ip classless
+!
+ip flow-export version 9
+!
+!
+access-list 100 deny ip any host 192.0.2.97
+access-list 100 deny ip 192.168.154.0 0.0.1.255 any
+access-list 100 deny ip host 0.0.0.0 any
+access-list 100 deny ip 127.0.0.0 0.255.255.255 any
+access-list 100 deny ip 172.16.0.0 0.15.255.255 any
+access-list 100 deny ip 192.168.0.0 0.0.255.255 any
+access-list 100 deny ip 224.0.0.0 15.255.255.255 any
+access-list 100 deny ip host 255.255.255.255 any
+access-list 100 deny ip any any
+access-list 100 permit gre any any
+access-list 100 permit ospf any any
+access-list 100 permit eigrp any any
+access-list 100 permit icmp any 192.0.2.96 0.0.0.15 echo-reply
+access-list 100 permit tcp any eq www 192.0.2.96 0.0.0.15 established
+access-list 100 permit tcp any eq 443 192.0.2.96 0.0.0.15 established
+access-list 100 permit udp any eq domain 192.0.2.96 0.0.0.15
+access-list 100 permit ip 10.27.68.0 0.0.3.255 any
+access-list 100 permit ip 172.21.72.0 0.0.1.255 any
+access-list 101 permit udp any any eq bootps
+access-list 101 deny ip any host 192.168.155.254
+access-list 101 deny ip any host 192.168.154.254
+access-list 101 permit ip 192.168.154.0 0.0.1.255 any
+access-list 101 deny ip any any
+!
+!
+!
+!
+!
+line con 0
+!
+line aux 0
+!
+line vty 0 4
+ login
+!
+!
+!
+end
+

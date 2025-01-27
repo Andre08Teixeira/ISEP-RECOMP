@@ -1,0 +1,74 @@
+### Passo 1: Configuração Inicial
+
+#### a) - Atribuir um hostname a cada switch
+Neste passo, definimos um nome exclusivo para cada switch da rede, como **SW1**, **SW2** e **SW3**. Essa identificação facilita a gestão e dos dispositivos na rede, permitindo que os administradores reconheçam rapidamente cada switch.
+
+#### b) - Configurar os endereços IP dos PCs
+Os PCs conectados à rede devem ser configurados com endereços IP que correspondam às suas respectivas VLANs. Isso é importante para que os dispositivos possam comunicar dentro das suas VLANs específicas.
+
+#### c) - Criar as VLANs 10 e 20 em todos os switches
+Aqui, criamos duas VLANs: a VLAN 10, chamada de "Staff", e a VLAN 20, chamada de "Users". Isto ajuda a organizar a rede, permitindo que diferentes grupos de utilizadores partilhem recursos sem interferir uns nos outros.
+
+#### d) - Configurar as interfaces como portas de acesso e associá-las às VLANs
+As portas dos switches devem ser configuradas como portas de acesso, o que significa que cada porta só pode pertencer a uma VLAN específica. As interfaces são atribuídas às VLANs que criamos anteriormente, garantindo que os dispositivos conectados a essas portas estejam na VLAN correta.
+
+### Passo 2: Criar um Trunk Seguro
+
+#### a) - Configurar os switches como trunks estáticos
+Neste passo, configuramos as interfaces GigabitEthernet dos switches para funcionarem como trunks. Isso permite que múltiplas VLANs sejam transportadas por uma única conexão entre os switches, facilitando a comunicação entre diferentes segmentos da rede.
+
+#### b) - Desativar a negociação DTP nas interfaces de trunk
+Desativamos a negociação DTP (Dynamic Trunking Protocol) para evitar que as portas mudem de modo automaticamente. Isso aumenta a segurança, prevenindo que configurações indesejadas sejam aplicadas às portas trunk.
+
+#### c) - Criar a VLAN 100 e nomeá-la como Native
+A VLAN nativa, identificada como VLAN 100, é criada para lidar com o tráfego sem tag. Essa VLAN é importante para garantir que qualquer tráfego que não tenha sido etiquetado corretamente seja direcionado adequadamente na rede.
+
+#### d) - Configurar as portas de trunk para usar a VLAN 100 como nativa
+As portas de trunk são configuradas para usar a VLAN 100 como VLAN nativa. Isso significa que qualquer tráfego que não tenha uma tag de VLAN será automaticamente associado à VLAN 100, garantindo que o tráfego não etiquetado não cause confusões na rede.
+
+### Passo 3: Proteger Portas de Switch Não Utilizadas
+
+#### a) - Desativar todas as portas não utilizadas
+Desativamos as portas que não estão em uso para evitar que dispositivos não autorizados se conectem à rede. Isso é uma medida de segurança fundamental para proteger a integridade da rede.
+
+#### b) - Criar a VLAN 999 e nomeá-la como BlackHole
+Uma nova VLAN, chamada "BlackHole", é criada para ser usada como um local de "quarentena" para portas não utilizadas. Isso significa que qualquer porta que não estiver em uso será movida para essa VLAN, isolando-a do restante da rede.
+
+#### c) - Mover todas as portas não utilizadas para a VLAN BlackHole
+Todas as portas que foram desativadas são associadas à VLAN 999. Dessa forma, mesmo que sejam reativadas acidentalmente, não terão acesso à rede principal, aumentando a segurança.
+
+### Passo 4: Implementar Port Security
+
+#### a) - Ativar Port Security nas portas de acesso ativas
+A segurança de porta (Port Security) é ativada nas portas que estão em uso. Essa configuração limita o acesso a cada porta, permitindo apenas dispositivos autorizados.
+
+#### b) - Configurar para permitir apenas 2(1) endereços MAC por porta
+Definimos um limite de dois endereços MAC permitidos por porta. Isso ajuda a prevenir ataques, como o spoofing de MAC e flooding de endereços, limitando o número de dispositivos que se podem conectar.
+
+#### c) - Configurar o endereço MAC do PC1 manualmente
+O endereço MAC do PC1 é adicionado manualmente à configuração de segurança da porta. Isso garante que apenas esse dispositivo específico possa se conectar à porta, aumentando a segurança.
+
+#### d) - Adicionar automaticamente os endereços MAC aprendidos à configuração
+A configuração é ajustada para que os endereços MAC que forem aprendidos automaticamente sejam adicionados à configuração de forma dinâmica. Isso permite que novos dispositivos sejam reconhecidos sem a necessidade de configuração manual.
+
+#### e) - Configurar o modo de violação do Port Security
+Definimos como é que a porta deve responder caso um dispositivo não autorizado se tente conectar. O modo de violação é configurado para bloquear pacotes de endereços MAC não permitidos, mas sem desativar a porta.
+
+### Passo 5: Configurar PortFast e BPDU Guard
+
+#### a) - Configurar STP para trabalhar com Rapid STP
+Ativamos o modo Rapid PVST (Per VLAN Spanning Tree) para todos os switches. Esse protocolo melhora a convergência do STP, reduzindo o tempo que leva para a rede se estabilizar após as mudanças.
+
+#### b) - Habilitar PortFast nas portas de acesso em uso no SW1
+Ativamos o PortFast nas portas de acesso, permitindo que estas portas tenham acesso à rede mais rapidamente, evitando delays desnecessários na ativação das portas.
+
+#### c) - Configurar SW2 para usar PortFast por padrão
+Configuramos o SW2 para que todas as portas de acesso ativem o PortFast por padrão. Isso simplifica a configuração e garante que o PortFast esteja ativo em todas as portas de acesso automaticamente.
+
+#### d) - Habilitar BPDU Guard nas portas de acesso em uso no SW1
+O BPDU Guard é ativado nas portas de acesso para proteger contra a recepção de BPDUs indesejadas. Isso ajuda a prevenir loops na rede e mantém a topologia da rede estável.
+
+#### e) - Configurar SW1 como Primary e SW2 como Secondary Root Bridges para VLANs 10 e 20
+Finalmente, configuramos o SW1 como o Root Bridge primário e o SW2 como o secundário para as VLANs 10 e 20. Isso ajuda a otimizar o tráfego de rede e a manter uma estrutura hierárquica no gerenciamento do Spanning Tree.
+
+---

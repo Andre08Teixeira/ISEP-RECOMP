@@ -1,0 +1,158 @@
+!
+version 15.1
+no service timestamps log datetime msec
+no service timestamps debug datetime msec
+no service password-encryption
+!
+hostname Oporto
+!
+!
+!
+!
+!
+!
+!
+!
+no ip cef
+no ipv6 cef
+!
+!
+!
+!
+license udi pid CISCO2911/K9 sn FTX15242FY0-
+!
+!
+!
+!
+!
+!
+!
+!
+!
+ip domain-name recomp.local
+!
+!
+spanning-tree mode pvst
+!
+!
+!
+!
+!
+!
+interface Tunnel0
+ ip address 10.0.0.1 255.255.255.252
+ mtu 1476
+ tunnel source GigabitEthernet0/0/0
+ tunnel destination 192.0.2.97
+!
+!
+interface Tunnel1
+ ip address 10.0.0.5 255.255.255.252
+ mtu 1476
+ tunnel source GigabitEthernet0/0/0
+ tunnel destination 193.136.60.147
+!
+!
+interface GigabitEthernet0/0
+ ip address 10.27.71.193 255.255.255.252
+ ip access-group 101 in
+ ip nat inside
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/1
+ ip address 10.27.71.197 255.255.255.252
+ ip access-group 101 in
+ ip nat inside
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/2
+ ip address 192.168.5.1 255.255.255.224
+ ip nat inside
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/0/0
+ ip address 209.165.200.129 255.255.255.224
+ ip access-group 100 in
+ ip nat outside
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+router eigrp 1
+ redistribute ospf 1 metric 10000 10 255 1 1500 
+ network 10.27.71.192 0.0.0.3
+ network 10.27.68.0 0.0.1.255
+ network 10.27.70.0 0.0.0.255
+ network 10.27.71.0 0.0.0.127
+ network 10.27.71.128 0.0.0.63
+ auto-summary
+!
+router ospf 1
+ router-id 1.1.1.1
+ log-adjacency-changes
+ redistribute eigrp 1 metric 1 subnets 
+ network 10.0.0.0 0.0.0.3 area 0
+ network 10.0.0.4 0.0.0.3 area 0
+ network 10.27.71.192 0.0.0.3 area 1
+ network 10.27.71.196 0.0.0.3 area 1
+ network 192.168.5.0 0.0.0.31 area 1
+!
+router rip
+!
+ip nat inside source list 10 interface GigabitEthernet0/0/0 overload
+ip nat inside source list 101 interface GigabitEthernet0/0/0 overload
+ip classless
+ip route 0.0.0.0 0.0.0.0 209.165.200.158 
+!
+ip flow-export version 9
+!
+!
+access-list 100 deny ip any host 10.27.71.193
+access-list 100 deny ip any host 10.27.71.197
+access-list 100 deny ip any host 209.165.200.129
+access-list 100 deny ip 10.27.68.0 0.0.3.255 any
+access-list 100 deny ip host 0.0.0.0 any
+access-list 100 deny ip 127.0.0.0 0.255.255.255 any
+access-list 100 deny ip 172.16.0.0 0.15.255.255 any
+access-list 100 deny ip 192.168.0.0 0.0.255.255 any
+access-list 100 deny ip 224.0.0.0 15.255.255.255 any
+access-list 100 deny ip host 255.255.255.255 any
+access-list 100 permit gre any any
+access-list 100 permit ospf any any
+access-list 100 permit eigrp any any
+access-list 100 permit icmp any 209.165.200.128 0.0.0.31 echo-reply
+access-list 100 permit tcp any eq www 209.165.200.128 0.0.0.31 established
+access-list 100 permit tcp any eq 443 209.165.200.128 0.0.0.31 established
+access-list 100 permit udp any eq domain 209.165.200.128 0.0.0.31
+access-list 100 permit ip 172.21.72.0 0.0.1.255 any
+access-list 100 permit ip 192.168.154.0 0.0.1.255 any
+access-list 100 deny ip any any
+access-list 101 deny ip any host 10.27.71.193
+access-list 101 deny ip any host 10.27.71.197
+access-list 101 permit udp any any eq bootps
+access-list 101 permit ip 10.27.68.0 0.0.3.255 any
+access-list 101 deny ip any any
+access-list 10 permit 10.27.68.0 0.0.3.255
+access-list 10 permit 192.168.5.0 0.0.0.31
+!
+!
+!
+!
+!
+logging trap debugging
+logging 10.27.71.210
+line con 0
+!
+line aux 0
+!
+line vty 0 4
+ login
+!
+!
+!
+end
+
